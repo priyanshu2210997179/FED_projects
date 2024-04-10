@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        Shopping Cart
+    </title>
+    <style>
+        body 
+        {
+            font-family: Garamond, Serif;
+            margin: 0;
+            padding: 0;
+            background-image: url('bgg.png');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+        .container 
+        {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: rgb(241, 206, 241);
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .container h1
+        {
+            text-align: center;
+        }
+        .item 
+        {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 10px;
+        }
+        .item img
+        {
+            width: 100px;
+            height: auto;
+            margin-right: 10px;
+        }
+        .item-info
+        {
+            flex-grow: 1;
+        }
+        .quantity 
+        {
+            display: flex;
+            align-items: center;
+        }
+        .quantity button
+        {
+            background-color: rgb(225, 131, 225);
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .quantity button:hover 
+        {
+            background-color: black;
+        }
+        .quantity input 
+        {
+            width: 40px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function()
+    {
+        const itemsContainer = document.getElementById('items-container');
+        const totalItemsSpan = document.getElementById('totalItems');
+        let totalItems = 0;
+
+        const items = 
+        [
+            { name: 'Kitkat', price: 'Rs 250', image: 'https://www.mynestle.in/media/catalog/product/k/k/kkp_oob_vday_1.jpg?optimize=high&bg-color=255,255,255&fit=bounds&height=600&width=600&canvas=600:600' },
+            { name: 'Dairy Milk', price: 'Rs 170', image: 'data:image/jpeg;base64,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' },
+            { name: 'Amul Fruit Nut', price: 'Rs 300', image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT_8xq4yk8iPjOeBhFMNQgKZTGXmJiOCRCm0w&usqp=CAU' }
+        ];
+        items.forEach((item, index) => 
+        {
+            const itemDiv = document.createElement('div');
+            itemDiv.classList.add('item');
+
+            itemDiv.innerHTML = `
+                <img src="${item.image}" alt="${item.name}">
+                <div class="item-info">
+                    <h2>${item.name}</h2>
+                    <p>Price: ${item.price}</p>
+                    <div class="quantity">
+                        <button class="decrement">-</button>
+                        <input type="text" value="0" id="quantity-${index}">
+                        <button class="increment">+</button>
+                    </div>
+                </div>
+            `;
+
+            itemsContainer.appendChild(itemDiv);
+
+            const quantityInput = document.getElementById('quantity-' + index);
+            const decrementButton = itemDiv.querySelector('.decrement');
+            const incrementButton = itemDiv.querySelector('.increment');
+
+            decrementButton.addEventListener('click', function() 
+            {
+                decreaseQuantity(quantityInput);
+            });
+            incrementButton.addEventListener('click', function() 
+            {
+                increaseQuantity(quantityInput);
+            });
+
+            quantityInput.addEventListener('input', function()
+            {
+                updateTotalItems();
+            });
+        });
+
+        function increaseQuantity(input) 
+        {
+            let value = parseInt(input.value);
+            input.value = ++value;
+            updateTotalItems();
+        }
+
+        function decreaseQuantity(input)
+        {
+            let value = parseInt(input.value);
+            if (value > 0)
+            {
+                input.value = --value;
+            }
+            if (value === 0) 
+            {
+                const itemToRemove = input.closest('.item');
+                itemToRemove.remove();
+            }
+            updateTotalItems();
+        }
+
+        function updateTotalItems() 
+        {
+            totalItems = 0;
+            document.querySelectorAll('.quantity input').forEach(input => 
+            {
+                totalItems += parseInt(input.value);
+            });
+            totalItemsSpan.textContent = totalItems;
+        }
+    });
+</script>
+
+<div class="container">
+    <h1>
+        SHOPPING CART
+    </h1>
+    <div id="items-container"></div>
+    <hr>
+    <h2>Total Items in Cart: <span id="totalItems">0</span></h2>
+</div>
+
+</body>
+</html>
